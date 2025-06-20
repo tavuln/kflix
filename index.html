@@ -956,159 +956,134 @@
     });
     </script>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const discordPopupSeen = localStorage.getItem('discordPopupSeen');
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Removed Discord popup code entirely
+    });
 
-            if (!discordPopupSeen) {
-                const popup = document.createElement('div');
-                popup.className = 'fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-75';
-                popup.innerHTML = `
-                    <div class="bg-gray-800 rounded-lg p-6 text-center space-y-4 max-w-sm">
-                        <h2 class="text-xl font-bold text-purple-400">KFlix has a Discord Server!</h2>
-                        <p class="text-gray-300">Join the community for updates and discussions <3</p>
-                        <a href="https://discord.gg/s9kUZw7CqP" target="_blank" 
-                            class="bg-purple-600 hover:bg-purple-700 px-4 py-2 rounded-lg text-white inline-block">
-                            Join Now
-                        </a>
-                        <button id="closePopup" 
-                            class="text-gray-500 hover:text-gray-300 focus:outline-none">
-                            Dismiss
-                        </button>
-                    </div>
-                `;
-                document.body.appendChild(popup);
-
-                document.getElementById('closePopup').addEventListener('click', function() {
-                    popup.style.display = 'none';
-                    localStorage.setItem('discordPopupSeen', 'true');
-                });
-            }
+    document.addEventListener('alpine:init', () => {
+        Alpine.store('contextMenu', {
+            show: false,
+            x: 0,
+            y: 0,
+            item: null
         });
+    });
 
-        document.addEventListener('alpine:init', () => {
-            Alpine.store('contextMenu', {
-                show: false,
-                x: 0,
-                y: 0,
-                item: null
-            });
-        });
+    function app() {
+        return {
+            apiKey: '1070730380f5fee0d87cf0382670b255',
+            content: [],
+            currentTab: 'movies',
+            language: localStorage.getItem('selectedLanguage') || 'en',
+            searchQuery: '',
+            currentPage: 1,
+            showWatchLater: false,
+            watchLaterItems: [],
+            watchLaterCount: 0,
+            showModal: false,
+            selectedContent: null,
+            currentVideoUrl: '',
+            selectedSeason: 1,
+            selectedEpisode: 1,
+            seasons: [],
+            episodes: [],
+            selectedSource: localStorage.getItem('defaultSource') || 'embedsu',
+            availableSources: availableSources,
+            showClearConfirm: false,
+            genres: [],
+            selectedGenre: '',
+            minRating: '',
+            filteredContent: [],
+            mobileMenu: false,
+            sortBy: 'popularity.desc',
+            yearRange: '',
+            selectedLanguage: '',
 
-        function app() {
-            return {
-                apiKey: '1070730380f5fee0d87cf0382670b255',
-                content: [],
-                currentTab: 'movies',
-                language: localStorage.getItem('selectedLanguage') || 'en',
-                searchQuery: '',
-                currentPage: 1,
-                showWatchLater: false,
-                watchLaterItems: [],
-                watchLaterCount: 0,
-                showModal: false,
-                selectedContent: null,
-                currentVideoUrl: '',
-                selectedSeason: 1,
-                selectedEpisode: 1,
-                seasons: [],
-                episodes: [],
-                selectedSource: localStorage.getItem('defaultSource') || 'embedsu',
-                availableSources: availableSources,
-                showClearConfirm: false,
-                genres: [],
-                selectedGenre: '',
-                minRating: '',
-                filteredContent: [],
-                mobileMenu: false,
-                sortBy: 'popularity.desc',
-                yearRange: '',
-                selectedLanguage: '',
+            async init() {
+                const savedItems = localStorage.getItem('watchLater');
+                if (savedItems) {
+                    this.watchLaterItems = JSON.parse(savedItems);
+                    this.watchLaterCount = this.watchLaterItems.length;
+                }
 
-                async init() {
-                    const savedItems = localStorage.getItem('watchLater');
-                    if (savedItems) {
-                        this.watchLaterItems = JSON.parse(savedItems);
-                        this.watchLaterCount = this.watchLaterItems.length;
-                    }
+                await this.fetchGenres();
+                await this.fetchContent();
 
+                this.$watch('currentTab', async () => {
+                    this.currentPage = 1;
+                    this.selectedGenre = '';
+                    this.minRating = '';
+                    this.yearRange = '';
                     await this.fetchGenres();
                     await this.fetchContent();
-                    
-                    this.$watch('currentTab', async () => {
-                        this.currentPage = 1;
-                        this.selectedGenre = '';
-                        this.minRating = '';
-                        this.yearRange = '';
-                        await this.fetchGenres();
-                        await this.fetchContent();
-                    });
-                    
-                    this.$watch('language', () => {
-                        this.currentPage = 1;
-                        this.fetchContent();
-                    });
-                },
+                });
 
-                async fetchGenres() {
-                    const baseUrl = 'https://api.themoviedb.org/3';
-                    const endpoint = this.currentTab === 'movies' ? 'genre/movie/list' : 'genre/tv/list';
-                    const url = `${baseUrl}/${endpoint}?api_key=${this.apiKey}&language=${this.language}`;
+                this.$watch('language', () => {
+                    this.currentPage = 1;
+                    this.fetchContent();
+                });
+            },
 
-                    try {
-                        const response = await fetch(url);
-                        const data = await response.json();
-                        this.genres = data.genres;
-                    } catch (error) {
-                        console.error('Error fetching genres:', error);
-                    }
-                },
+            async fetchGenres() {
+                const baseUrl = 'https://api.themoviedb.org/3';
+                const endpoint = this.currentTab === 'movies' ? 'genre/movie/list' : 'genre/tv/list';
+                const url = `${baseUrl}/${endpoint}?api_key=${this.apiKey}&language=${this.language}`;
 
-                getGenreName(genreId) {
-                    const genre = this.genres.find(g => g.id === parseInt(genreId));
-                    return genre ? genre.name : '';
-                },
+                try {
+                    const response = await fetch(url);
+                    const data = await response.json();
+                    this.genres = data.genres;
+                } catch (error) {
+                    console.error('Error fetching genres:', error);
+                }
+            },
 
-                async applyFilters() {
-                    const baseUrl = 'https://api.themoviedb.org/3/discover';
-                    const endpoint = this.currentTab === 'movies' ? 'movie' : 'tv';
-                    
-                    let params = new URLSearchParams({
-                        api_key: this.apiKey,
-                        language: `${this.language}-${this.language.toUpperCase()}`,
-                        page: this.currentPage,
-                        sort_by: this.sortBy
-                    });
+            getGenreName(genreId) {
+                const genre = this.genres.find(g => g.id === parseInt(genreId));
+                return genre ? genre.name : '';
+            },
 
-                    if (this.selectedGenre) {
-                        params.append('with_genres', this.selectedGenre);
-                    }
+            async applyFilters() {
+                const baseUrl = 'https://api.themoviedb.org/3/discover';
+                const endpoint = this.currentTab === 'movies' ? 'movie' : 'tv';
 
-                    if (this.minRating) {
-                        params.append('vote_average.gte', this.minRating);
-                    }
+                let params = new URLSearchParams({
+                    api_key: this.apiKey,
+                    language: `${this.language}-${this.language.toUpperCase()}`,
+                    page: this.currentPage,
+                    sort_by: this.sortBy
+                });
 
-                    if (this.selectedLanguage) {
-                        params.append('with_original_language', this.selectedLanguage);
-                    }
+                if (this.selectedGenre) {
+                    params.append('with_genres', this.selectedGenre);
+                }
 
-                    if (this.yearRange) {
-                        const [startYear, endYear] = this.yearRange.split(',');
-                        params.append('primary_release_date.gte', `${startYear}-01-01`);
-                        params.append('primary_release_date.lte', `${endYear}-12-31`);
-                    }
+                if (this.minRating) {
+                    params.append('vote_average.gte', this.minRating);
+                }
 
-                    const url = `${baseUrl}/${endpoint}?${params.toString()}`;
+                if (this.selectedLanguage) {
+                    params.append('with_original_language', this.selectedLanguage);
+                }
 
-                    try {
-                        const response = await fetch(url);
-                        const data = await response.json();
-                        this.content = data.results;
-                        this.filteredContent = this.content;
-                    } catch (error) {
-                        console.error('Error applying filters:', error);
-                    }
-                },
+                if (this.yearRange) {
+                    const [startYear, endYear] = this.yearRange.split(',');
+                    params.append('primary_release_date.gte', `${startYear}-01-01`);
+                    params.append('primary_release_date.lte', `${endYear}-12-31`);
+                }
+
+                const url = `${baseUrl}/${endpoint}?${params.toString()}`;
+
+                try {
+                    const response = await fetch(url);
+                    const data = await response.json();
+                    this.content = data.results;
+                    this.filteredContent = this.content;
+                } catch (error) {
+                    console.error('Error applying filters:', error);
+                }
+            },
 
                 getLanguageName(code) {
                     const languages = {
