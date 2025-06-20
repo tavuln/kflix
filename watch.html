@@ -1,4 +1,4 @@
-<!DOCTYPE html>More actions
+<!DOCTYPE html>More actionsMore actions
 <html lang="en">
 <head>
     <!-- google tag (gtag.js) -->
@@ -337,6 +337,38 @@
                                     <path d="M17 3H7c-1.1 0-2 .9-2 2v16l7-3 7 3V5c0-1.1-.9-2-2-2z"/>
                                 </svg>
                             </button>
+                            <!-- provider down message -->
+                            <div x-show="showDownMessage" 
+                                 class="absolute inset-0 flex items-center justify-center bg-gray-900 bg-opacity-90">
+                                <div class="text-center px-4">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 md:h-12 md:w-12 mx-auto text-red-500 mb-3 md:mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                                    </svg>
+                                    <p class="text-lg md:text-xl font-semibold text-white mb-2">Source unavailable, trying alternatives... 🔄</p>
+                                    <p class="text-sm md:text-base text-gray-400">If this persists, you can manually select another source below!</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="p-3 md:p-4">
+                            <div class="flex items-center justify-between text-xs md:text-sm text-gray-400">
+                                <div class="hidden lg:block">
+                                    <a href="https://ko-fi.com/vybrix" target="_blank" class="text-purple-400 hover:text-purple-300 transition-colors">Support me here</a>
+                                </div>
+                                <div class="text-center mx-auto animated-text" x-show="content?.runtime || content?.episode_run_time">
+                                    <span>If you start now, it'll end at </span>
+                                    <span x-text="(() => {
+                                        const runtime = content?.runtime || content?.episode_run_time?.[0] || 0;
+                                        const now = new Date();
+                                        const endTime = new Date(now.getTime() + runtime * 60000);
+                                        return endTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                                    })()"></span>
+                                </div>
+                                <div class="hidden lg:block">
+                                    <a href="https://ko-fi.com/vybrix" target="_blank" class="text-purple-400 hover:text-purple-300 transition-colors">Support me here</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 <!-- provider down message -->
 <div x-show="showDownMessage" 
      class="absolute inset-0 flex items-center justify-center bg-gray-900 bg-opacity-90">
