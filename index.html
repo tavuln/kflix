@@ -41,7 +41,7 @@
         }
     </script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet">
-<style>
+  <style>
         @keyframes float {
             0% { transform: translateY(0px); }
             50% { transform: translateY(-10px); }
@@ -53,14 +53,13 @@
             100% { transform: translateY(0); }
         }
 
-        .animate-slide-down {
-            animation: slide-down 0.5s ease-out;
+        @keyframes stars {
+            0% { background-position: 0 0; }
+            100% { background-position: -10000px 5000px; }
         }
 
-        @keyframes glow {
-            0% { box-shadow: 0 0 5px rgba(167, 139, 250, 0.3); }
-            50% { box-shadow: 0 0 20px rgba(167, 139, 250, 0.5); }
-            100% { box-shadow: 0 0 5px rgba(167, 139, 250, 0.3); }
+        .animate-slide-down {
+            animation: slide-down 0.5s ease-out;
         }
 
         .search-container {
@@ -74,8 +73,8 @@
             inset: -2px;
             background: radial-gradient(
                 circle at var(--mouse-x, center) var(--mouse-y, center),
-                rgba(168, 85, 247, 0.5) 0%,
-                rgba(168, 85, 247, 0.2) 25%,
+                rgba(119, 119, 119, 0.3) 0%,
+                rgba(119, 119, 119, 0.1) 25%,
                 transparent 70%
             );
             border-radius: 9999px;
@@ -100,6 +99,7 @@
         .card-hover {
             transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             position: relative;
+            border: 1px solid rgba(119, 119, 119, 0.1);
         }
 
         .card-hover::after {
@@ -108,9 +108,9 @@
             inset: -1px;
             background: linear-gradient(
                 35deg,
-                rgba(168, 85, 247, 0.4),
-                rgba(168, 85, 247, 0),
-                rgba(139, 92, 246, 0.4)
+                rgba(119, 119, 119, 0.2),
+                rgba(119, 119, 119, 0),
+                rgba(119, 119, 119, 0.2)
             );
             border-radius: 0.5rem;
             z-index: -1;
@@ -121,6 +121,7 @@
         .card-hover:hover {
             transform: translateY(-8px) scale(1.02);
             box-shadow: 0 20px 30px -10px rgba(0, 0, 0, 0.5);
+            border-color: rgba(119, 119, 119, 0.3);
         }
 
         .card-hover:hover::after {
@@ -170,13 +171,13 @@
             height: 2px;
             bottom: 0;
             left: 50%;
-            background: linear-gradient(to right, #a78bfa, #4c1d95);
+            background: linear-gradient(to right, #777777, #222222);
             transition: all 0.3s ease;
             transform: translateX(-50%);
         }
 
         .nav-link:hover {
-            color: #a78bfa;
+            color: #bbbbbb;
         }
 
         .nav-link:hover::after {
@@ -184,10 +185,10 @@
         }
 
         .glass-effect {
-            background: rgba(17, 24, 39, 0.7);
+            background: rgba(17, 17, 17, 0.85);
             backdrop-filter: blur(12px);
             border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
         }
 
         .modal-animation {
@@ -204,9 +205,9 @@
         }
 
         .search-input:focus {
-            box-shadow: 0 0 20px rgba(167, 139, 250, 0.3);
+            box-shadow: 0 0 20px rgba(119, 119, 119, 0.2);
             transform: scale(1.02);
-            background: rgba(31, 41, 55, 0.9);
+            background: rgba(26, 26, 26, 0.9);
         }
 
         .search-input:focus + div {
@@ -222,6 +223,14 @@
 
         html {
             scroll-behavior: smooth;
+            background-color: #0a0a0a;
+        }
+
+        body {
+            background: 
+                radial-gradient(ellipse at bottom, #1a1a1a 0%, #0a0a0a 100%),
+                url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%23999999' fill-opacity='0.1' fill-rule='evenodd'/%3E%3C/svg%3E");
+            animation: stars 200s linear infinite;
         }
 
         .scroll-top-button {
@@ -235,27 +244,47 @@
             visibility: visible;
         }
 
-        #githubButton img, #kofiButton img {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-        }
-
-        @keyframes spin {
-            from {
-                transform: rotate(0deg);
-            }
-            to {
-                transform: rotate(180deg);
-            }
-        }
-
         .settings-icon {
             transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .settings-icon:hover {
             transform: rotate(180deg);
+        }
+
+        .nova-title {
+            font-family: 'Orbitron', sans-serif;
+            letter-spacing: 1px;
+            background: linear-gradient(to right, #bbbbbb, #ffffff);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 0 0 10px rgba(187, 187, 187, 0.3);
+        }
+
+        .section-title {
+            font-family: 'Orbitron', sans-serif;
+            letter-spacing: 1px;
+            background: linear-gradient(to right, #999999, #bbbbbb);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .metallic-border {
+            border: 1px solid rgba(119, 119, 119, 0.2);
+            box-shadow: 0 0 15px rgba(119, 119, 119, 0.1);
+        }
+
+        .metallic-button {
+            background: linear-gradient(to bottom, #2a2a2a, #1a1a1a);
+            border: 1px solid rgba(119, 119, 119, 0.3);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .metallic-button:hover {
+            background: linear-gradient(to bottom, #333333, #222222);
+            border-color: rgba(119, 119, 119, 0.5);
         }
     </style>
 </head>
