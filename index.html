@@ -1,191 +1,305 @@
 <!DOCTYPE html>
-<html lang="en" x-data="app()" x-init="init()">
+<html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>nova</title>
+    <!-- google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-HGL07M90WG"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
 
-  <!-- Inter font -->
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
-
-  <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
-
+        gtag('config', 'G-HGL07M90WG');
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KFlix</title>
+    <meta content="KFlix" property="og:title"/>
+    <meta name="keywords" content="free movies, free streaming, watch movies online, free tv shows, streaming service, watch movies free, online streaming, KFlixstream, free movies online, free series online">
+    <meta content="Click, watch, enjoy. KFlix breaks down the paywall, ensuring that quality content is accessible to everyone." property="og:description"/>
+    <meta content="https://example.com" property="og:url"/>
+    <meta content="https://raw.githubusercontent.com/tavuln/kflix/main/logo.png" property="og:image"/>
+    <meta content="#A17FC0" data-react-helmet="true" name="theme-color"/>
+    <meta property="twitter:card" content="summary">
+    <meta property="twitter:url" content="https://KFlixstream.top">
+    <meta property="twitter:title" content="KFlix - Watch Movies & TV Shows">
+    <meta property="twitter:description" content="Click, watch, enjoy. KFlix breaks down the paywall, ensuring that quality content is accessible to everyone.">
+    <meta property="twitter:image" content="https://raw.githubusercontent.com/tavuln/kflix/main/logo.png">
+    <link rel="icon" type="image/x-icon" href="https://raw.githubusercontent.com/tavuln/kflix/main/logo.png">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/alpinejs/3.10.3/cdn.min.js" defer></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="sources.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Poppins', 'sans-serif'],
+                    },
+                },
+            },
+        }
+    </script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet">
   <style>
-    /* Reset and base */
-    body {
-      background: #111;
-      color: #e1e1e6;
-      font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-      margin: 0;
-      padding: 2rem;
-      min-height: 100vh;
-    }
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
 
-    h1 {
-      color: white;
-      font-weight: 600;
-      margin-bottom: 1rem;
-      font-size: 2rem;
-    }
+        @keyframes slide-down {
+            0% { transform: translateY(-100%); }
+            100% { transform: translateY(0); }
+        }
 
-    a {
-      color: inherit;
-      text-decoration: none;
-    }
+        @keyframes stars {
+            0% { background-position: 0 0; }
+            100% { background-position: -10000px 5000px; }
+        }
 
-    /* Search input */
-    .search-container input {
-      width: 100%;
-      max-width: 600px;
-      padding: 14px 20px;
-      border-radius: 12px;
-      border: 2px solid #333;
-      background-color: #222;
-      color: #eee;
-      font-size: 1rem;
-      font-weight: 400;
-      outline-offset: 2px;
-      transition: border-color 0.25s ease;
-      margin-bottom: 2rem;
-    }
-    .search-container input::placeholder {
-      color: #888;
-    }
-    .search-container input:focus {
-      border-color: #0070f3;
-      outline: none;
-    }
+        .animate-slide-down {
+            animation: slide-down 0.5s ease-out;
+        }
 
-    /* Buttons like Vercel */
-    button, .btn {
-      background-color: #0070f3;
-      border: none;
-      border-radius: 10px;
-      color: white;
-      padding: 12px 28px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background-color 0.25s ease;
-      font-size: 1rem;
-      user-select: none;
-    }
-    button:hover, .btn:hover {
-      background-color: #0051a3;
-    }
+        .search-container {
+            position: relative;
+            width: 256px;
+        }
 
-    /* Secondary buttons */
-    .btn-secondary {
-      background-color: transparent;
-      border: 2px solid #0070f3;
-      color: #0070f3;
-    }
-    .btn-secondary:hover {
-      background-color: #0070f3;
-      color: white;
-    }
+        .search-container::before {
+            content: '';
+            position: absolute;
+            inset: -2px;
+            background: radial-gradient(
+                circle at var(--mouse-x, center) var(--mouse-y, center),
+                rgba(119, 119, 119, 0.3) 0%,
+                rgba(119, 119, 119, 0.1) 25%,
+                transparent 70%
+            );
+            border-radius: 9999px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
+            z-index: 0;
+        }
 
-    /* Cards */
-    .card {
-      background-color: #1a1a1a;
-      border-radius: 12px;
-      overflow: hidden;
-      box-shadow: 0 0 8px rgba(0,0,0,0.5);
-      transition: box-shadow 0.3s ease;
-      cursor: pointer;
-    }
-    .card:hover {
-      box-shadow: 0 0 20px #0070f3;
-    }
-    .card img {
-      width: 100%;
-      height: 160px;
-      object-fit: cover;
-      display: block;
-      border-bottom: 1px solid #333;
-    }
-    .card-content {
-      padding: 1rem;
-      color: #ddd;
-    }
-    .card-content h3 {
-      margin: 0 0 0.25rem;
-      font-weight: 600;
-      font-size: 1.1rem;
-      color: white;
-    }
-    .card-content p {
-      margin: 0;
-      font-size: 0.9rem;
-      color: #999;
-    }
+        .search-container:hover::before,
+        .search-container:focus-within::before {
+            opacity: 1;
+        }
 
-    /* Modal */
-    [x-cloak] { display: none !important; }
-    .modal-overlay {
-      background-color: rgba(0,0,0,0.8);
-      position: fixed;
-      inset: 0;
-      z-index: 60;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 1rem;
-    }
-    .modal-content {
-      background-color: #1a1a1a;
-      border-radius: 14px;
-      max-width: 700px;
-      width: 100%;
-      padding: 2rem;
-      box-shadow: 0 0 40px #0070f3;
-      color: #e1e1e6;
-      max-height: 90vh;
-      overflow-y: auto;
-      position: relative;
-    }
+        .search-input {
+            position: relative;
+            z-index: 1;
+            transition: all 0.3s ease;
+            padding-right: 5rem !important;
+        }
 
-    /* Scroll to top button */
-    .scroll-top {
-      position: fixed;
-      bottom: 2rem;
-      right: 2rem;
-      background-color: #0070f3;
-      border-radius: 50%;
-      width: 48px;
-      height: 48px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      box-shadow: 0 4px 12px rgba(0, 112, 243, 0.6);
-      transition: transform 0.2s ease;
-      z-index: 70;
-    }
-    .scroll-top:hover {
-      transform: scale(1.1);
-    }
-    .scroll-top svg {
-      stroke: white;
-      width: 24px;
-      height: 24px;
-    }
+        .card-hover {
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            border: 1px solid rgba(119, 119, 119, 0.1);
+        }
 
-    /* Layout tweaks */
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill,minmax(280px,1fr));
-      gap: 1.5rem;
-    }
+        .card-hover::after {
+            content: '';
+            position: absolute;
+            inset: -1px;
+            background: linear-gradient(
+                35deg,
+                rgba(119, 119, 119, 0.2),
+                rgba(119, 119, 119, 0),
+                rgba(119, 119, 119, 0.2)
+            );
+            border-radius: 0.5rem;
+            z-index: -1;
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
 
-  </style>
+        .card-hover:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 20px 30px -10px rgba(0, 0, 0, 0.5);
+            border-color: rgba(119, 119, 119, 0.3);
+        }
+
+        .card-hover:hover::after {
+            opacity: 1;
+        }
+
+        .card-hover:hover .card-overlay {
+            opacity: 1;
+            background: linear-gradient(
+                to top,
+                rgba(0, 0, 0, 0.95) 0%,
+                rgba(0, 0, 0, 0.8) 40%,
+                rgba(0, 0, 0, 0.2) 100%
+            );
+        }
+
+        .card-overlay {
+            opacity: 0;
+            transition: all 0.4s ease;
+            background: linear-gradient(
+                to top,
+                rgba(0, 0, 0, 0.9) 0%,
+                rgba(0, 0, 0, 0.7) 50%,
+                rgba(0, 0, 0, 0.3) 100%
+            );
+        }
+
+        .card-hover:hover img {
+            filter: blur(2px) brightness(0.9);
+            transition: all 0.4s ease;
+        }
+
+        .card-hover img {
+            transition: all 0.4s ease;
+        }
+
+        .nav-link {
+            position: relative;
+            transition: all 0.3s ease;
+            padding: 0.5rem 0;
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: 0;
+            left: 50%;
+            background: linear-gradient(to right, #777777, #222222);
+            transition: all 0.3s ease;
+            transform: translateX(-50%);
+        }
+
+        .nav-link:hover {
+            color: #bbbbbb;
+        }
+
+        .nav-link:hover::after {
+            width: 100%;
+        }
+
+        .glass-effect {
+            background: rgba(17, 17, 17, 0.85);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal-animation {
+            animation: modalFade 0.3s ease-out;
+        }
+
+        @keyframes modalFade {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .floating-button {
+            animation: float 3s ease-in-out infinite;
+        }
+
+        .search-input:focus {
+            box-shadow: 0 0 20px rgba(119, 119, 119, 0.2);
+            transform: scale(1.02);
+            background: rgba(26, 26, 26, 0.9);
+        }
+
+        .search-input:focus + div {
+            opacity: 0.7;
+            transform: translateY(-50%) scale(0.95);
+        }
+
+        .search-input + div {
+            transition: all 0.3s ease;
+            opacity: 0.5;
+            z-index: 2;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            background-color: #0a0a0a;
+        }
+
+        body {
+            background: 
+                radial-gradient(ellipse at bottom, #1a1a1a 0%, #0a0a0a 100%),
+                url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%23999999' fill-opacity='0.1' fill-rule='evenodd'/%3E%3C/svg%3E");
+            animation: stars 200s linear infinite;
+        }
+
+        .scroll-top-button {
+            transition: all 0.3s ease;
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .scroll-top-button.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .settings-icon {
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .settings-icon:hover {
+            transform: rotate(180deg);
+        }
+
+        .nova-title {
+            font-family: 'Orbitron', sans-serif;
+            letter-spacing: 1px;
+            background: linear-gradient(to right, #bbbbbb, #ffffff);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 0 0 10px rgba(187, 187, 187, 0.3);
+        }
+
+        .section-title {
+            font-family: 'Orbitron', sans-serif;
+            letter-spacing: 1px;
+            background: linear-gradient(to right, #999999, #bbbbbb);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .metallic-border {
+            border: 1px solid rgba(119, 119, 119, 0.2);
+            box-shadow: 0 0 15px rgba(119, 119, 119, 0.1);
+        }
+
+        .metallic-button {
+            background: linear-gradient(to bottom, #2a2a2a, #1a1a1a);
+            border: 1px solid rgba(119, 119, 119, 0.3);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .metallic-button:hover {
+            background: linear-gradient(to bottom, #333333, #222222);
+            border-color: rgba(119, 119, 119, 0.5);
+        }
+    </style>
 </head>
-<body>
-  <div class="container" x-data="app()" x-init="init()" style="max-width: 1200px; margin: auto;">
-    <h1>nova</h1>
-
-    <div class="search-container">
-      <input type="text" placeholder="Search movies, shows, or @person" x-model="searchQuery" @input.debounce="searchContent()" />
+<body class="bg-gray-900 text-white min-h-screen" x-data="app()" 
+      @keydown.meta.k.prevent="$refs.searchInput.focus()"
+      @keydown.ctrl.k.prevent="$refs.searchInput.focus()">
+    <div x-data="{ showPopup: localStorage.getItem('showPopupReminder') !== 'false' }" x-show="showPopup" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-75">
+        <div class="bg-gray-800 text-white p-6 rounded-lg shadow-lg max-w-md w-full">
+            <h2 class="text-lg font-bold mb-2">Important Notice</h2>
+            <p class="mb-4">Please bookmark <a href="https://KFlix-domains.github.io" target="_blank" class="text-purple-400 underline">KFlix-domains.github.io</a> in case the domain you're using stops working. This website lists all KFlix domains and indicates whether each one is working or not.</p>
+            <p class="mb-4">You can disable this popup in <a href="settings.html" class="text-purple-400 underline">Settings > Appearance</a>.</p>
+            <button @click="showPopup = false" class="bg-purple-600 text-white w-full px-4 py-2 rounded hover:bg-purple-700 transition">Got it!</button>
+        </div>
     </div>
+    <div x-show="localStorage.getItem('showParticles') !== 'false'" id="particles-js" class="fixed inset-0 pointer-events-none z-0"></div>
 
 <!-- navigation -->
 <nav class="fixed w-full z-50 glass-effect">
@@ -1263,12 +1377,3 @@
 </script>
 </body>
 </html>
-
-
-<!--
- _   _                 
-| \ | | _____   ____ _ 
-|  \| |/ _ \ \ / / _` |
-| |\  | (_) \ V / (_| |
-|_| \_|\___/ \_/ \__,_|
--->
