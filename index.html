@@ -1,238 +1,141 @@
-<!DOCTYPE html>
-<html lang="en" x-data="novaApp()" :class="{ 'dark': isDark }" x-init="init()" class="dark">
-<head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>nova</title>
-<style>
-  /* minimal dark theme style */
-  body {
-    margin: 0; font-family: 'Inter', sans-serif; background: #0a0a0f; color: #eee;
-    display: flex; flex-direction: column; min-height: 100vh;
-  }
-  header {
-    padding: 2rem 3rem; font-weight: 700; font-size: 1.8rem; border-bottom: 1px solid #222;
-  }
-  main {
-    flex: 1; max-width: 900px; margin: 2rem auto; padding: 0 1rem;
-  }
-  input[type="search"] {
-    width: 100%; padding: 0.6rem 1rem; font-size: 1rem;
-    background: #121217; border: none; border-radius: 8px; color: #eee;
-    outline-offset: 2px;
-  }
-  input[type="search"]::placeholder {
-    color: #666;
-  }
-  .grid {
-    display: grid; grid-template-columns: repeat(auto-fill,minmax(140px,1fr)); gap: 1rem; margin-top: 2rem;
-  }
-  .card {
-    background: #121217; border-radius: 12px; overflow: hidden;
-    cursor: pointer; transition: background 0.2s;
-  }
-  .card:hover {
-    background: #1e1e28;
-  }
-  img {
-    width: 100%; height: 210px; object-fit: cover; display: block;
-  }
-  .card-info {
-    padding: 0.6rem 0.8rem;
-  }
-  h3 {
-    margin: 0; font-weight: 600; font-size: 1rem; line-height: 1.2;
-    color: #eee;
-  }
-  p {
-    margin: 0.25rem 0 0 0; font-size: 0.85rem; color: #999;
-  }
-  .filters {
-    display: flex; gap: 1rem; margin-top: 1.5rem;
-  }
-  select {
-    background: #121217; border: none; border-radius: 8px; color: #eee; padding: 0.5rem 1rem;
-    font-size: 0.9rem; cursor: pointer;
-  }
-  button {
-    background: #7f5af0; color: white; border: none; border-radius: 8px;
-    padding: 0.6rem 1.2rem; font-weight: 600; cursor: pointer;
-    transition: background 0.3s;
-  }
-  button:hover {
-    background: #6939e0;
-  }
-  footer {
-    padding: 1rem; text-align: center; font-size: 0.85rem; color: #555;
-    border-top: 1px solid #222;
-  }
-  .watch-later {
-    margin-top: 3rem; border-top: 1px solid #222; padding-top: 1rem;
-  }
-  .watch-later h2 {
-    font-weight: 600; margin-bottom: 1rem;
-  }
-  .watch-later-list {
-    display: flex; flex-wrap: wrap; gap: 1rem;
-  }
-  .watch-later-item {
-    background: #121217; padding: 0.5rem 0.8rem; border-radius: 10px;
-    font-size: 0.9rem; cursor: pointer;
-    transition: background 0.2s;
-  }
-  .watch-later-item:hover {
-    background: #2b2b3c;
-  }
-</style>
-<script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
-</head>
-<body>
+<div x-data="novaApp()" x-init="fetchContent()" class="min-h-screen bg-[#0f0f0f] text-white p-6 font-sans max-w-5xl mx-auto">
 
-<header>nova</header>
-
-<main>
-  <input type="search" placeholder="Search movies or shows..." x-model.debounce="searchQuery" @input="searchContent" />
-
-  <div class="filters">
-    <select x-model="currentTab" @change="fetchContent">
-      <option value="movies">Movies</option>
-      <option value="tv">TV Shows</option>
-    </select>
-
-    <select x-model="selectedGenre" @change="applyFilters">
-      <option value="">All Genres</option>
-      <template x-for="genre in genres" :key="genre.id">
-        <option :value="genre.id" x-text="genre.name"></option>
-      </template>
-    </select>
-
-    <select x-model="minRating" @change="applyFilters">
-      <option value="">Min Rating</option>
-      <option value="7">7+</option>
-      <option value="8">8+</option>
-      <option value="9">9+</option>
-    </select>
-
-    <button @click="clearAllFilters">Clear</button>
+  <!-- Search input -->
+  <div class="mb-6">
+    <input
+      type="text"
+      placeholder="Search movies or shows..."
+      x-model.debounce.500ms="searchQuery"
+      @input="searchQuery ? searchContent() : fetchContent()"
+      class="w-full rounded-md bg-[#1a1a1a] border border-gray-700 px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
+    />
   </div>
 
-  <div class="grid">
-    <template x-for="item in filteredContent" :key="item.id">
-      <div class="card" @click="openContent(item)">
-        <img :src="item.poster_path ? 'https://image.tmdb.org/t/p/w500' + item.poster_path : 'https://via.placeholder.com/500x750?text=No+Image'" :alt="item.title || item.name" />
-        <div class="card-info">
-          <h3 x-text="item.title || item.name"></h3>
-          <p x-text="`⭐ ${item.vote_average || 'N/A'}/10`"></p>
+  <!-- Tabs -->
+  <div class="flex gap-4 mb-6">
+    <button
+      :class="currentTab === 'movies' ? 'bg-purple-600' : 'bg-gray-800'"
+      @click="switchTab('movies')"
+      class="px-4 py-2 rounded"
+    >Movies</button>
+    <button
+      :class="currentTab === 'shows' ? 'bg-purple-600' : 'bg-gray-800'"
+      @click="switchTab('shows')"
+      class="px-4 py-2 rounded"
+    >Shows</button>
+  </div>
+
+  <!-- Content grid -->
+  <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+    <template x-for="item in content" :key="item.id">
+      <div class="bg-[#1a1a1a] rounded overflow-hidden cursor-pointer hover:ring-2 hover:ring-purple-500" @click="openContent(item)">
+        <img
+          :src="`https://image.tmdb.org/t/p/w300${item.poster_path}`"
+          :alt="item.title || item.name"
+          class="w-full h-44 object-cover"
+        />
+        <div class="p-2">
+          <h3 class="text-sm font-semibold" x-text="item.title || item.name"></h3>
+          <p class="text-xs text-gray-400 mt-1">⭐ <span x-text="item.vote_average.toFixed(1)"></span>/10</p>
         </div>
       </div>
     </template>
   </div>
 
-  <div class="watch-later" x-show="watchLaterItems.length > 0">
-    <h2>Watch Later</h2>
-    <div class="watch-later-list">
-      <template x-for="item in watchLaterItems" :key="item.id">
-        <div class="watch-later-item" @click="toggleWatchLater(item)" x-text="item.title || item.name"></div>
-      </template>
+  <!-- Pagination -->
+  <div class="flex justify-center gap-4 mt-6">
+    <button
+      :disabled="currentPage === 1"
+      @click="changePage(currentPage - 1)"
+      class="px-4 py-2 rounded bg-purple-600 disabled:opacity-50 disabled:cursor-not-allowed"
+    >
+      Prev
+    </button>
+    <span class="self-center text-gray-400">Page <span x-text="currentPage"></span></span>
+    <button
+      @click="changePage(currentPage + 1)"
+      class="px-4 py-2 rounded bg-purple-600"
+    >
+      Next
+    </button>
+  </div>
+
+  <!-- Modal -->
+  <div
+    x-show="showModal"
+    @click.away="showModal = false"
+    class="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center p-4"
+    style="display: none;"
+  >
+    <div class="bg-[#121212] rounded-lg max-w-xl w-full p-6 overflow-auto max-h-[80vh]">
+      <h2 class="text-xl font-bold mb-2" x-text="selectedContent.title || selectedContent.name"></h2>
+      <p class="mb-4 text-gray-300" x-text="selectedContent.overview"></p>
+      <button @click="showModal = false" class="bg-purple-600 px-4 py-2 rounded">Close</button>
     </div>
   </div>
-</main>
 
-<footer>© 2025 nova. Powered by TMDB API.</footer>
+  <script>
+    function novaApp() {
+      return {
+        apiKey: '1070730380f5fee0d87cf0382670b255',
+        currentTab: 'movies',
+        searchQuery: '',
+        currentPage: 1,
+        content: [],
+        showModal: false,
+        selectedContent: null,
 
-<script>
-function novaApp() {
-  return {
-    apiKey: '1070730380f5fee0d87cf0382670b255',
-    currentTab: 'movies',
-    searchQuery: '',
-    genres: [],
-    content: [],
-    filteredContent: [],
-    selectedGenre: '',
-    minRating: '',
-    watchLaterItems: JSON.parse(localStorage.getItem('novaWatchLater') || '[]'),
-    isDark: true,
+        async fetchContent() {
+          const url = `https://api.themoviedb.org/3/${this.currentTab === 'movies' ? 'movie/popular' : 'tv/popular'}?api_key=${this.apiKey}&language=en-US&page=${this.currentPage}`;
+          try {
+            const res = await fetch(url);
+            const data = await res.json();
+            this.content = data.results || [];
+          } catch (e) {
+            console.error('Error fetching content', e);
+            this.content = [];
+          }
+        },
 
-    init() {
-      this.fetchGenres();
-      this.fetchContent();
-    },
+        async searchContent() {
+          if (!this.searchQuery.trim()) {
+            this.currentPage = 1;
+            return this.fetchContent();
+          }
+          const url = `https://api.themoviedb.org/3/search/${this.currentTab === 'movies' ? 'movie' : 'tv'}?api_key=${this.apiKey}&query=${encodeURIComponent(this.searchQuery)}&language=en-US&page=${this.currentPage}`;
+          try {
+            const res = await fetch(url);
+            const data = await res.json();
+            this.content = data.results || [];
+          } catch (e) {
+            console.error('Error searching content', e);
+            this.content = [];
+          }
+        },
 
-    async fetchGenres() {
-      const url = `https://api.themoviedb.org/3/genre/${this.currentTab}/list?api_key=${this.apiKey}&language=en-US`;
-      try {
-        const res = await fetch(url);
-        const data = await res.json();
-        this.genres = data.genres;
-      } catch (e) {
-        console.error('Failed fetching genres', e);
-      }
-    },
+        changePage(page) {
+          if (page < 1) return;
+          this.currentPage = page;
+          if (this.searchQuery.trim()) {
+            this.searchContent();
+          } else {
+            this.fetchContent();
+          }
+        },
 
-    async fetchContent() {
-      const url = `https://api.themoviedb.org/3/${this.currentTab === 'movies' ? 'movie/popular' : 'tv/popular'}?api_key=${this.apiKey}&language=en-US&page=1`;
-      try {
-        const res = await fetch(url);
-        const data = await res.json();
-        this.content = data.results;
-        this.applyFilters();
-      } catch (e) {
-        console.error('Failed fetching content', e);
-      }
-    },
+        switchTab(tab) {
+          if (this.currentTab === tab) return;
+          this.currentTab = tab;
+          this.currentPage = 1;
+          this.searchQuery = '';
+          this.fetchContent();
+        },
 
-    applyFilters() {
-      this.filteredContent = this.content.filter(item => {
-        if (this.selectedGenre && !item.genre_ids.includes(parseInt(this.selectedGenre))) return false;
-        if (this.minRating && item.vote_average < parseFloat(this.minRating)) return false;
-        if (this.searchQuery) {
-          const search = this.searchQuery.toLowerCase();
-          const title = (item.title || item.name || '').toLowerCase();
-          if (!title.includes(search)) return false;
+        openContent(item) {
+          this.selectedContent = item;
+          this.showModal = true;
         }
-        return true;
-      });
-    },
-
-    async searchContent() {
-      if (!this.searchQuery.trim()) {
-        return this.fetchContent();
-      }
-      const url = `https://api.themoviedb.org/3/search/${this.currentTab === 'movies' ? 'movie' : 'tv'}?api_key=${this.apiKey}&query=${encodeURIComponent(this.searchQuery)}&language=en-US&page=1`;
-      try {
-        const res = await fetch(url);
-        const data = await res.json();
-        this.content = data.results;
-        this.applyFilters();
-      } catch (e) {
-        console.error('Failed searching content', e);
-      }
-    },
-
-    toggleWatchLater(item) {
-      const index = this.watchLaterItems.findIndex(i => i.id === item.id);
-      if (index === -1) {
-        this.watchLaterItems.push({...item, type: this.currentTab});
-      } else {
-        this.watchLaterItems.splice(index, 1);
-      }
-      localStorage.setItem('novaWatchLater', JSON.stringify(this.watchLaterItems));
-    },
-
-    openContent(item) {
-      alert(`Open details for: ${item.title || item.name}`);
-    },
-
-    clearAllFilters() {
-      this.selectedGenre = '';
-      this.minRating = '';
-      this.searchQuery = '';
-      this.fetchContent();
+      };
     }
-  }
-}
-</script>
-
-</body>
-</html>
+  </script>
+</div>
