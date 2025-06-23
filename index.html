@@ -41,223 +41,219 @@
         }
     </script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet">
-    <style>
-        @keyframes float {
-            0% { transform: translateY(0px); }
-            50% { transform: translateY(-10px); }
-            100% { transform: translateY(0px); }
-        }
+<style>
+    :root {
+        --primary-glow: rgba(192, 192, 192, 0.35);
+        --gradient-glow: linear-gradient(145deg, #1c1c1c, #444);
+        --accent: #c0c0c0;
+        --hover-glow: rgba(255, 255, 255, 0.1);
+    }
 
-        @keyframes slide-down {
-            0% { transform: translateY(-100%); }
-            100% { transform: translateY(0); }
-        }
+    html {
+        scroll-behavior: smooth;
+        background: linear-gradient(to bottom, #0d0d0d, #1a1a1a);
+        color: #ddd;
+    }
 
-        .animate-slide-down {
-            animation: slide-down 0.5s ease-out;
-        }
+    @keyframes float {
+        0% { transform: translateY(0px); }
+        50% { transform: translateY(-10px); }
+        100% { transform: translateY(0px); }
+    }
 
-        @keyframes glow {
-            0% { box-shadow: 0 0 5px rgba(167, 139, 250, 0.3); }
-            50% { box-shadow: 0 0 20px rgba(167, 139, 250, 0.5); }
-            100% { box-shadow: 0 0 5px rgba(167, 139, 250, 0.3); }
-        }
+    @keyframes slide-down {
+        0% { transform: translateY(-100%); }
+        100% { transform: translateY(0); }
+    }
 
-        .search-container {
-            position: relative;
-            width: 256px;
-        }
+    .animate-slide-down {
+        animation: slide-down 0.5s ease-out;
+    }
 
-        .search-container::before {
-            content: '';
-            position: absolute;
-            inset: -2px;
-            background: radial-gradient(
-                circle at var(--mouse-x, center) var(--mouse-y, center),
-                rgba(168, 85, 247, 0.5) 0%,
-                rgba(168, 85, 247, 0.2) 25%,
-                transparent 70%
-            );
-            border-radius: 9999px;
-            opacity: 0;
-            transition: opacity 0.3s;
-            pointer-events: none;
-            z-index: 0;
-        }
+    @keyframes glow {
+        0%, 100% { box-shadow: 0 0 8px var(--primary-glow); }
+        50% { box-shadow: 0 0 24px rgba(192,192,192,0.5); }
+    }
 
-        .search-container:hover::before,
-        .search-container:focus-within::before {
-            opacity: 1;
-        }
+    .search-container {
+        position: relative;
+        width: 256px;
+    }
 
-        .search-input {
-            position: relative;
-            z-index: 1;
-            transition: all 0.3s ease;
-            padding-right: 5rem !important;
-        }
+    .search-container::before {
+        content: '';
+        position: absolute;
+        inset: -2px;
+        background: radial-gradient(
+            circle at var(--mouse-x, center) var(--mouse-y, center),
+            rgba(192,192,192,0.3) 0%,
+            rgba(192,192,192,0.15) 25%,
+            transparent 70%
+        );
+        border-radius: 9999px;
+        opacity: 0;
+        transition: opacity 0.3s;
+        pointer-events: none;
+        z-index: 0;
+    }
 
-        .card-hover {
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            position: relative;
-        }
+    .search-container:hover::before,
+    .search-container:focus-within::before {
+        opacity: 1;
+    }
 
-        .card-hover::after {
-            content: '';
-            position: absolute;
-            inset: -1px;
-            background: linear-gradient(
-                35deg,
-                rgba(168, 85, 247, 0.4),
-                rgba(168, 85, 247, 0),
-                rgba(139, 92, 246, 0.4)
-            );
-            border-radius: 0.5rem;
-            z-index: -1;
-            opacity: 0;
-            transition: opacity 0.4s ease;
-        }
+    .search-input {
+        position: relative;
+        z-index: 1;
+        background: #1a1a1a;
+        color: #e0e0e0;
+        border: 1px solid #444;
+        border-radius: 8px;
+        padding: 0.5rem 1rem;
+        padding-right: 5rem !important;
+        transition: all 0.3s ease;
+    }
 
-        .card-hover:hover {
-            transform: translateY(-8px) scale(1.02);
-            box-shadow: 0 20px 30px -10px rgba(0, 0, 0, 0.5);
-        }
+    .search-input:focus {
+        box-shadow: 0 0 20px var(--primary-glow);
+        transform: scale(1.02);
+        background: #222;
+    }
 
-        .card-hover:hover::after {
-            opacity: 1;
-        }
+    .search-input + div {
+        transition: all 0.3s ease;
+        opacity: 0.5;
+        z-index: 2;
+    }
 
-        .card-hover:hover .card-overlay {
-            opacity: 1;
-            background: linear-gradient(
-                to top,
-                rgba(0, 0, 0, 0.95) 0%,
-                rgba(0, 0, 0, 0.8) 40%,
-                rgba(0, 0, 0, 0.2) 100%
-            );
-        }
+    .search-input:focus + div {
+        opacity: 0.7;
+        transform: translateY(-50%) scale(0.95);
+    }
 
-        .card-overlay {
-            opacity: 0;
-            transition: all 0.4s ease;
-            background: linear-gradient(
-                to top,
-                rgba(0, 0, 0, 0.9) 0%,
-                rgba(0, 0, 0, 0.7) 50%,
-                rgba(0, 0, 0, 0.3) 100%
-            );
-        }
+    .card-hover {
+        transition: all 0.4s ease;
+        position: relative;
+        border-radius: 0.5rem;
+        background: var(--gradient-glow);
+        overflow: hidden;
+    }
 
-        .card-hover:hover img {
-            filter: blur(2px) brightness(0.9);
-            transition: all 0.4s ease;
-        }
+    .card-hover::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(
+            35deg,
+            rgba(255, 255, 255, 0.08),
+            transparent,
+            rgba(255, 255, 255, 0.05)
+        );
+        z-index: -1;
+        opacity: 0;
+        transition: opacity 0.4s ease;
+    }
 
-        .card-hover img {
-            transition: all 0.4s ease;
-        }
+    .card-hover:hover {
+        transform: translateY(-6px) scale(1.015);
+        box-shadow: 0 20px 40px rgba(255, 255, 255, 0.1);
+    }
 
-        .nav-link {
-            position: relative;
-            transition: all 0.3s ease;
-            padding: 0.5rem 0;
-        }
+    .card-hover:hover::after {
+        opacity: 1;
+    }
 
-        .nav-link::after {
-            content: '';
-            position: absolute;
-            width: 0;
-            height: 2px;
-            bottom: 0;
-            left: 50%;
-            background: linear-gradient(to right, #a78bfa, #4c1d95);
-            transition: all 0.3s ease;
-            transform: translateX(-50%);
-        }
+    .card-hover:hover img {
+        filter: brightness(0.85) grayscale(0.1);
+    }
 
-        .nav-link:hover {
-            color: #a78bfa;
-        }
+    .card-hover img {
+        transition: all 0.4s ease;
+    }
 
-        .nav-link:hover::after {
-            width: 100%;
-        }
+    .card-overlay {
+        opacity: 0;
+        transition: all 0.4s ease;
+        background: linear-gradient(to top, #000000e6, #00000080, transparent);
+    }
 
-        .glass-effect {
-            background: rgba(17, 24, 39, 0.7);
-            backdrop-filter: blur(12px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
-        }
+    .card-hover:hover .card-overlay {
+        opacity: 1;
+    }
 
-        .modal-animation {
-            animation: modalFade 0.3s ease-out;
-        }
+    .nav-link {
+        position: relative;
+        transition: all 0.3s ease;
+        color: var(--accent);
+        padding: 0.5rem 0;
+    }
 
-        @keyframes modalFade {
-            from { opacity: 0; transform: scale(0.95); }
-            to { opacity: 1; transform: scale(1); }
-        }
+    .nav-link::after {
+        content: '';
+        position: absolute;
+        width: 0;
+        height: 2px;
+        bottom: 0;
+        left: 50%;
+        background: linear-gradient(to right, #ccc, #999);
+        transition: all 0.3s ease;
+        transform: translateX(-50%);
+    }
 
-        .floating-button {
-            animation: float 3s ease-in-out infinite;
-        }
+    .nav-link:hover {
+        color: #f5f5f5;
+    }
 
-        .search-input:focus {
-            box-shadow: 0 0 20px rgba(167, 139, 250, 0.3);
-            transform: scale(1.02);
-            background: rgba(31, 41, 55, 0.9);
-        }
+    .nav-link:hover::after {
+        width: 100%;
+    }
 
-        .search-input:focus + div {
-            opacity: 0.7;
-            transform: translateY(-50%) scale(0.95);
-        }
+    .glass-effect {
+        background: rgba(30, 30, 30, 0.7);
+        backdrop-filter: blur(14px);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        box-shadow: 0 6px 30px rgba(255, 255, 255, 0.08);
+    }
 
-        .search-input + div {
-            transition: all 0.3s ease;
-            opacity: 0.5;
-            z-index: 2;
-        }
+    .modal-animation {
+        animation: modalFade 0.3s ease-out;
+    }
 
-        html {
-            scroll-behavior: smooth;
-        }
+    @keyframes modalFade {
+        from { opacity: 0; transform: scale(0.95); }
+        to { opacity: 1; transform: scale(1); }
+    }
 
-        .scroll-top-button {
-            transition: all 0.3s ease;
-            opacity: 0;
-            visibility: hidden;
-        }
+    .floating-button {
+        animation: float 3s ease-in-out infinite;
+    }
 
-        .scroll-top-button.visible {
-            opacity: 1;
-            visibility: visible;
-        }
+    .scroll-top-button {
+        transition: all 0.3s ease;
+        opacity: 0;
+        visibility: hidden;
+    }
 
-        #githubButton img, #kofiButton img {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-        }
+    .scroll-top-button.visible {
+        opacity: 1;
+        visibility: visible;
+    }
 
-        @keyframes spin {
-            from {
-                transform: rotate(0deg);
-            }
-            to {
-                transform: rotate(180deg);
-            }
-        }
+    #githubButton img, #kofiButton img {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        filter: grayscale(100%) brightness(1.2);
+    }
 
-        .settings-icon {
-            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-        }
+    .settings-icon {
+        transition: transform 0.6s ease;
+    }
 
-        .settings-icon:hover {
-            transform: rotate(180deg);
-        }
-    </style>
+    .settings-icon:hover {
+        transform: rotate(180deg);
+    }
+</style>
 </head>
 <body class="bg-gray-900 text-white min-h-screen" x-data="app()" 
       @keydown.meta.k.prevent="$refs.searchInput.focus()"
